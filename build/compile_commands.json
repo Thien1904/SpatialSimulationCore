@@ -1,0 +1,44 @@
+[
+{
+  "directory": "C:/Users/Paul/Desktop/RES/SpatialSimulationCore/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe  @CMakeFiles/SpatialSimulation.dir/includes_CXX.rsp -g -std=gnu++17 -O3 -pthread -march=native -o CMakeFiles\\SpatialSimulation.dir\\src\\main.cpp.obj -c C:\\Users\\Paul\\Desktop\\RES\\SpatialSimulationCore\\src\\main.cpp",
+  "file": "C:/Users/Paul/Desktop/RES/SpatialSimulationCore/src/main.cpp",
+  "output": "CMakeFiles/SpatialSimulation.dir/src/main.cpp.obj"
+},
+{
+  "directory": "C:/Users/Paul/Desktop/RES/SpatialSimulationCore/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe  @CMakeFiles/SpatialSimulation.dir/includes_CXX.rsp -g -std=gnu++17 -O3 -pthread -march=native -o CMakeFiles\\SpatialSimulation.dir\\src\\Entity.cpp.obj -c C:\\Users\\Paul\\Desktop\\RES\\SpatialSimulationCore\\src\\Entity.cpp",
+  "file": "C:/Users/Paul/Desktop/RES/SpatialSimulationCore/src/Entity.cpp",
+  "output": "CMakeFiles/SpatialSimulation.dir/src/Entity.cpp.obj"
+},
+{
+  "directory": "C:/Users/Paul/Desktop/RES/SpatialSimulationCore/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe  @CMakeFiles/SpatialSimulation.dir/includes_CXX.rsp -g -std=gnu++17 -O3 -pthread -march=native -o CMakeFiles\\SpatialSimulation.dir\\src\\SpatialGrid.cpp.obj -c C:\\Users\\Paul\\Desktop\\RES\\SpatialSimulationCore\\src\\SpatialGrid.cpp",
+  "file": "C:/Users/Paul/Desktop/RES/SpatialSimulationCore/src/SpatialGrid.cpp",
+  "output": "CMakeFiles/SpatialSimulation.dir/src/SpatialGrid.cpp.obj"
+},
+{
+  "directory": "C:/Users/Paul/Desktop/RES/SpatialSimulationCore/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe  @CMakeFiles/SpatialSimulation.dir/includes_CXX.rsp -g -std=gnu++17 -O3 -pthread -march=native -o CMakeFiles\\SpatialSimulation.dir\\src\\WebSocketServer.cpp.obj -c C:\\Users\\Paul\\Desktop\\RES\\SpatialSimulationCore\\src\\WebSocketServer.cpp",
+  "file": "C:/Users/Paul/Desktop/RES/SpatialSimulationCore/src/WebSocketServer.cpp",
+  "output": "CMakeFiles/SpatialSimulation.dir/src/WebSocketServer.cpp.obj"
+},
+{
+  "directory": "C:/Users/Paul/Desktop/RES/SpatialSimulationCore/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe  @CMakeFiles/SpatialSimulationBenchmark.dir/includes_CXX.rsp -g -std=gnu++17 -O3 -pthread -march=native -o CMakeFiles\\SpatialSimulationBenchmark.dir\\src\\Benchmark.cpp.obj -c C:\\Users\\Paul\\Desktop\\RES\\SpatialSimulationCore\\src\\Benchmark.cpp",
+  "file": "C:/Users/Paul/Desktop/RES/SpatialSimulationCore/src/Benchmark.cpp",
+  "output": "CMakeFiles/SpatialSimulationBenchmark.dir/src/Benchmark.cpp.obj"
+},
+{
+  "directory": "C:/Users/Paul/Desktop/RES/SpatialSimulationCore/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe  @CMakeFiles/SpatialSimulationBenchmark.dir/includes_CXX.rsp -g -std=gnu++17 -O3 -pthread -march=native -o CMakeFiles\\SpatialSimulationBenchmark.dir\\src\\Entity.cpp.obj -c C:\\Users\\Paul\\Desktop\\RES\\SpatialSimulationCore\\src\\Entity.cpp",
+  "file": "C:/Users/Paul/Desktop/RES/SpatialSimulationCore/src/Entity.cpp",
+  "output": "CMakeFiles/SpatialSimulationBenchmark.dir/src/Entity.cpp.obj"
+},
+{
+  "directory": "C:/Users/Paul/Desktop/RES/SpatialSimulationCore/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe  @CMakeFiles/SpatialSimulationBenchmark.dir/includes_CXX.rsp -g -std=gnu++17 -O3 -pthread -march=native -o CMakeFiles\\SpatialSimulationBenchmark.dir\\src\\SpatialGrid.cpp.obj -c C:\\Users\\Paul\\Desktop\\RES\\SpatialSimulationCore\\src\\SpatialGrid.cpp",
+  "file": "C:/Users/Paul/Desktop/RES/SpatialSimulationCore/src/SpatialGrid.cpp",
+  "output": "CMakeFiles/SpatialSimulationBenchmark.dir/src/SpatialGrid.cpp.obj"
+}
+]

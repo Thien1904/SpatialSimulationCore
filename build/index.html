@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>C++ Realtime Spatial Simulation View</title>
+    <style>
+        body {
+            margin: 0; background-color: #0b0f19; color: #f1f5f9;
+            font-family: monospace; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; height: 100vh; overflow: hidden;
+        }
+        .container { display: flex; gap: 20px; align-items: flex-start; }
+        .panel {
+            background: #111827; padding: 20px; border-radius: 12px;
+            border: 1px solid #1f2937; width: 240px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+        h3 { margin: 0 0 15px 0; font-size: 15px; color: #38bdf8; border-bottom: 1px solid #1f2937; padding-bottom: 8px; }
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px; }
+        .stat-val { color: #38bdf8; font-weight: bold; }
+        canvas { border: 2px solid #1e293b; background-color: #020617; border-radius: 8px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Bảng thông số trực tiếp từ C++ -->
+        <div class="panel">
+            <h3>C++ Engine Telemetry</h3>
+            <div class="stat-row">
+                <span>Trạng thái:</span>
+                <span class="stat-val" style="color: #34d399;">Đang kết nối Live</span>
+            </div>
+            <div class="stat-row">
+                <span>Số thực thể:</span>
+                <span class="stat-val" id="entityCount">0</span>
+            </div>
+            <div class="stat-row">
+                <span>Tần suất quét:</span>// tăng tần số quét lên 120ms
+
+                <span class="stat-val">33 ms (FPS ~30)</span>
+            </div>
+        </div>
+
+        <!-- Canvas hiển thị đồ họa -->
+        <div>
+            <canvas id="simCanvas" width="800" height="600"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const entityCountSpan = document.getElementById('entityCount');
+
+        const WIDTH = canvas.width;
+        const HEIGHT = canvas.height;
+        const CELL_SIZE = 50; // Khớp với CELL_SIZE trong C++
+
+        async function fetchAndUpdate() {
+            try {
+                // Thêm tham số thời gian để tránh trình duyệt cache file JSON cũ
+                let response = await fetch('sim_state.json?t=' + Date.now());
+                if (!response.ok) return;
+                let data = await response.json();
+
+                if (!data.entities) return;
+
+                // Cập nhật số lượng thực thể lên bảng điều khiển
+                entityCountSpan.innerText = data.entities.length;
+
+                // Xóa frame cũ trên canvas
+                ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
+                // 1. Vẽ lưới không gian Spatial Grid
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 1;
+                for (let x = 0; x <= WIDTH; x += CELL_SIZE) {
+                    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke();
+                }
+                for (let y = 0; y <= HEIGHT; y += CELL_SIZE) {
+                    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WIDTH, y); ctx.stroke();
+                }
+
+                // 2. Vẽ các thực thể dựa trên tọa độ (x, y) thực tế do C++ tính toán
+                ctx.fillStyle = '#38bdf8';
+                for (let e of data.entities) {
+                    ctx.fillRect(e.x, e.y, 3, 3);
+                }
+            } catch (err) {
+                // Bỏ qua lỗi nhẹ nếu file JSON đang bị C++ ghi đè dở dang
+            }
+        }
+
+        // Poll liên tục để lấy frame mới nhất từ C++
+        setInterval(fetchAndUpdate, 120);
+    </script>
+</body>
+</html>

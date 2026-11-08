@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Spatial Simulation - Trực quan hóa Động cơ</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #0b0f19;
+            color: #f1f5f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .panel {
+            background: #111827;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #1f2937;
+            width: 260px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+        h2 { margin: 0 0 15px 0; font-size: 16px; color: #38bdf8; border-bottom: 1px solid #1f2937; padding-bottom: 8px; }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 13px;
+            font-family: monospace;
+        }
+        .stat-val { color: #38bdf8; font-weight: bold; }
+        canvas {
+            border: 2px solid #1e293b;
+            background-color: #020617;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+        }
+        .btn {
+            background: #0284c7;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #0ea5e9; }
+        .mode-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            background: #065f46;
+            color: #34d399;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="panel">
+            <h2>Trạng thái mô phỏng</h2>
+            <div class="mode-badge" id="modeStatus">Chưa kết nối C++</div>
+            
+            <div class="stat-row">
+                <span>Số lượng thực thể:</span>
+                <span class="stat-val" id="count">0</span>
+            </div>
+            <div class="stat-row">
+                <span>Kích thước Lưới:</span>
+                <span class="stat-val">50 x 50 px</span>
+            </div>
+            <div class="stat-row">
+                <span>Thời gian C++:</span>
+                <span class="stat-val"><span id="frametime">0.0</span> ms</span>
+            </div>
+            <div class="stat-row">
+                <span>FPS:</span>
+                <span class="stat-val" id="fps">60</span>
+            </div>
+
+            <button class="btn" id="connectionButton" onclick="toggleMode()">Kết nối C++</button>
+        </div>
+
+        <div>
+            <canvas id="simCanvas" width="800" height="600"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const countSpan = document.getElementById('count');
+        const frameTimeSpan = document.getElementById('frametime');
+        const fpsSpan = document.getElementById('fps');
+        const modeStatus = document.getElementById('modeStatus');
+
+        const WIDTH = canvas.width;
+        const HEIGHT = canvas.height;
+        const CELL_SIZE = 50;
+        const COLS = Math.ceil(WIDTH / CELL_SIZE);
+        const ROWS = Math.ceil(HEIGHT / CELL_SIZE);
+
+        let entities = [];
+        let ws = null;
+        let lastTime = performance.now();
+        let lastCoreFrame = 0;
+
+        function loop() {
+            ctx.clearRect(0, 0, WIDTH, HEIGHT);
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            for (let x = 0; x <= WIDTH; x += CELL_SIZE) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, HEIGHT);
+                ctx.stroke();
+            }
+            for (let y = 0; y <= HEIGHT; y += CELL_SIZE) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(WIDTH, y);
+                ctx.stroke();
+            }
+
+            ctx.fillStyle = '#38bdf8';
+            for (const entity of entities) {
+                ctx.fillRect(entity.x, entity.y, 2, 2);
+            }
+
+            requestAnimationFrame(loop);
+        }
+
+        function toggleMode() {
+            if (ws) {
+                ws.close();
+                return;
+            }
+
+            modeStatus.innerText = 'Đang kết nối...';
+            modeStatus.style.background = '#9a3412';
+            modeStatus.style.color = '#fdba74';
+            ws = new WebSocket('ws://localhost:8080');
+            ws.onopen = () => {
+                modeStatus.innerText = 'Đã kết nối C++';
+                modeStatus.style.background = '#065f46';
+                modeStatus.style.color = '#34d399';
+                document.getElementById('connectionButton').innerText = 'Ngắt kết nối';
+            };
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (Array.isArray(data.entities)) {
+                        entities = data.entities;
+                        countSpan.innerText = entities.length;
+                        if (Number.isFinite(data.frameMs)) {
+                            frameTimeSpan.innerText = data.frameMs.toFixed(2);
+                        }
+                        if (Number.isFinite(data.frame) && data.frame !== lastCoreFrame) {
+                            const now = performance.now();
+                            const elapsed = now - lastTime;
+                            fpsSpan.innerText = lastCoreFrame === 0 ? '...' : Math.round(1000 / elapsed);
+                            lastTime = now;
+                            lastCoreFrame = data.frame;
+                        }
+                    }
+                } catch (error) {
+                    modeStatus.innerText = 'Dữ liệu C++ không hợp lệ';
+                    console.error(error);
+                }
+            };
+            ws.onerror = () => {
+                modeStatus.innerText = 'Không kết nối được C++';
+                modeStatus.style.background = '#7f1d1d';
+                modeStatus.style.color = '#fecaca';
+            };
+            ws.onclose = () => {
+                ws = null;
+                entities = [];
+                countSpan.innerText = '0';
+                frameTimeSpan.innerText = '0.0';
+                fpsSpan.innerText = '0';
+                lastCoreFrame = 0;
+                lastTime = performance.now();
+                document.getElementById('connectionButton').innerText = 'Kết nối C++';
+                if (modeStatus.innerText !== 'Không kết nối được C++') {
+                    modeStatus.innerText = 'Đã ngắt kết nối';
+                    modeStatus.style.background = '#334155';
+                    modeStatus.style.color = '#cbd5e1';
+                }
+            };
+        }
+
+        requestAnimationFrame(loop);
+    </script>
+</body>
+</html>
