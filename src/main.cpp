@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <vector>
 #include <memory>
 #include <cstdlib>
@@ -33,6 +33,7 @@ void exportStateToJson(const std::string& state, const std::string& filename) {
     if (!file) {
         throw std::runtime_error("Cannot write output file: " + filename);
     }
+   
 }
 
 int main() {
@@ -42,7 +43,11 @@ int main() {
     SpatialGrid simulationGrid(CellSize);
     WebSocketServer server(8080);
 
-    constexpr int NumEntities = 9000;
+    constexpr int NumEntities = 1000;\
+
+
+
+
     std::vector<std::shared_ptr<Entity>> allEntities;
     allEntities.reserve(NumEntities);
 
@@ -65,7 +70,7 @@ int main() {
     std::cout << "[INFO] Initialized " << NumEntities << " entities.\n";
     std::cout << "[INFO] WebSocket server listening at ws://localhost:8080\n";
 
-    for (int frame = 1; frame <= 1000; ++frame) {
+    for (int frame = 1; frame <= 100; ++frame) {
         auto start = std::chrono::high_resolution_clock::now();
 
         for (const auto& entity : allEntities) {
@@ -74,9 +79,31 @@ int main() {
 
         simulationGrid.processEntitiesParallel(WorldWidth, WorldHeight);
         simulationGrid.clear();
+        
+        //Check độ phức tạp O(N^2) Brute-force
+       /* for (auto& entity : allEntities) {
+            entity->x += entity->vx;
+            entity->y += entity->vy;
+
+            if (entity->x < 0.0f || entity->x > WorldWidth) entity->vx *= -1.0f;
+            if (entity->y < 0.0f || entity->y > WorldHeight) entity->vy *= -1.0f;
+        }
+
+        int collisionCount = 0;
+        for (size_t i = 0; i < allEntities.size(); ++i) {
+            for (size_t j = i + 1; j < allEntities.size(); ++j) {
+                float dx = allEntities[i]->x - allEntities[j]->x;
+                float dy = allEntities[i]->y - allEntities[j]->y;
+                if ((dx * dx + dy * dy) < 100.0f) {
+                    collisionCount++;
+                }
+            }
+        }
+        */
 
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> elapsed = end - start;
+        // đóng gói phát DL
         const std::string state = serializeState(allEntities, frame, elapsed.count());
         exportStateToJson(state, "sim_state.json");
         server.publish(state);
@@ -90,3 +117,6 @@ int main() {
 
     return 0;
 }
+
+
+
